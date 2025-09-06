@@ -1,0 +1,15 @@
+{
+  "name": "2048-solver",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm run build && npm run run",
+    "build": "tsc -p .",
+    "run": "node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "typescript": "^5.9.2"
+  }
+}
