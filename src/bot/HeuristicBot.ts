@@ -71,11 +71,11 @@ export class HeuristicBot {
     const checkChain: (
       row: number,
       column: number,
-      direction: "h" | "v"
+      direction: "horizontal" | "vertical"
     ) => number = (
       row: number,
       column: number,
-      direction: "h" | "v"
+      direction: "horizontal" | "vertical"
     ): number => {
       let chainLength: number = 1;
       let value: number = board.grid[row][column];
@@ -83,7 +83,7 @@ export class HeuristicBot {
         return 0;
       }
 
-      if (direction === "h") {
+      if (direction === "horizontal") {
         for (let c: number = column + 1; c < 4; c++) {
           if (board.grid[row][c] === value) {
             chainLength++;
@@ -107,8 +107,8 @@ export class HeuristicBot {
 
     for (let row: number = 0; row < 4; row++) {
       for (let column: number = 0; column < 4; column++) {
-        score += checkChain(row, column, "h");
-        score += checkChain(row, column, "v");
+        score += checkChain(row, column, "horizontal");
+        score += checkChain(row, column, "vertical");
       }
     }
     return score;

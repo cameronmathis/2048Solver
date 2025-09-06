@@ -11,9 +11,21 @@ async function main() {
   );
 
   const best: Genome = await geneticAlgorithm.run();
-  logger.log("Best genome:", best);
+  logger.log("Best genome:", {
+    empties: { value: best.weightEmpties },
+    merges: { value: best.weightMerges },
+    edge: { value: best.weightEdge },
+    corner: { value: best.weightCorner },
+    maxTile: { value: best.weightMaxTile },
+    maxTilePosition: { value: best.weightMaxTilePosition },
+    isolation: { value: best.weightIsolation },
+    smoothness: { value: best.weightSmoothness },
+    monotonicity: { value: best.weightMonotonicity },
+    gradient: { value: best.weightGradient },
+    mergeChain: { value: best.weightMergeChain },
+  });
 
-  const numberOfGames = 100;
+  const numberOfGames = 1000;
   logger.log(`Running ${numberOfGames} games with the best genome...`);
   let gamesWon = 0;
   let bestScore = 0;

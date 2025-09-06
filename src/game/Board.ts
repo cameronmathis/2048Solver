@@ -74,77 +74,48 @@ export class Board {
   }
 
   public get availableMoves(): Direction[] {
-    const validMoves: Direction[] = [];
+    const validMoves = new Set<Direction>();
 
-    for (let row: number = 0; row < 4; row++) {
-      let canMoveLeft: boolean = false;
-      let canMoveRight: boolean = false;
-      let lastValue: number = this.grid[row][0];
-
-      for (let column: number = 1; column < 4; column++) {
-        const currentValue: number = this.grid[row][column];
-        if (currentValue === 0) {
-          if (lastValue !== 0) {
-            canMoveRight = true;
-          }
-        } else {
-          if (lastValue === 0) {
-            canMoveLeft = true;
-          }
-          if (lastValue === currentValue) {
-            canMoveLeft = true;
-            canMoveRight = true;
-          }
-        }
-        lastValue = currentValue;
-      }
-
-      if (canMoveLeft) {
-        validMoves.push("left");
-      }
-      if (canMoveRight) {
-        validMoves.push("right");
-      }
-      if (validMoves.length === 2) {
-        break;
-      }
+    for (let row: number = 0; row < 4 && validMoves.size < 2; row++) {
+      const { positive, negative } = this.canMove(this.grid[row]);
+      if (positive) validMoves.add("left");
+      if (negative) validMoves.add("right");
     }
 
-    for (let column: number = 0; column < 4; column++) {
-      let canMoveUp: boolean = false;
-      let canMoveDown: boolean = false;
-      let lastValue: number = this.grid[0][column];
-
-      for (let row: number = 1; row < 4; row++) {
-        const currentValue: number = this.grid[row][column];
-        if (currentValue === 0) {
-          if (lastValue !== 0) {
-            canMoveDown = true;
-          }
-        } else {
-          if (lastValue === 0) {
-            canMoveUp = true;
-          }
-          if (lastValue === currentValue) {
-            canMoveUp = true;
-            canMoveDown = true;
-          }
-        }
-        lastValue = currentValue;
-      }
-
-      if (canMoveUp) {
-        validMoves.push("up");
-      }
-      if (canMoveDown) {
-        validMoves.push("down");
-      }
-      if (validMoves.length === 4) {
-        break;
-      }
+    for (let column: number = 0; column < 4 && validMoves.size < 4; column++) {
+      const columnValues = [
+        this.grid[0][column],
+        this.grid[1][column],
+        this.grid[2][column],
+        this.grid[3][column],
+      ];
+      const { positive, negative } = this.canMove(columnValues);
+      if (positive) validMoves.add("up");
+      if (negative) validMoves.add("down");
     }
 
-    return validMoves;
+    return Array.from(validMoves);
+  }
+
+  private canMove(values: number[]): { positive: boolean; negative: boolean } {
+    let canMovePositive: boolean = false;
+    let canMoveNegative: boolean = false;
+    let lastValue: number = values[0];
+
+    for (let i: number = 1; i < values.length; i++) {
+      const currentValue: number = values[i];
+      if (currentValue === 0 && lastValue !== 0) {
+        canMoveNegative = true;
+      } else if (currentValue !== 0) {
+        if (lastValue === 0 || lastValue === currentValue) {
+          canMovePositive = true;
+          canMoveNegative = lastValue === currentValue ? true : canMoveNegative;
+        }
+      }
+      lastValue = currentValue;
+    }
+
+    return { positive: canMovePositive, negative: canMoveNegative };
   }
 
   public print(): void {

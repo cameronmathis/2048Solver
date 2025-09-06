@@ -15,18 +15,18 @@ export const NEUTRAL_GENOME_WEIGHTS: GenomeWeightsConfig = {
   mergeChain: { value: 1 },
 };
 
-export const GENOME_WEIGHTS: GenomeWeightsConfig = {
-  empties: { value: 0.7, influence: 0.7 },
-  merges: { value: 0.5, influence: 0.7 },
-  edge: { value: 0.3, influence: 0.7 },
-  corner: { value: 0.3, influence: 0.7 },
-  maxTile: { value: 0.9, influence: 0.7 },
-  maxTilePosition: { value: 0.8, influence: 0.7 },
-  isolation: { value: 0.2, influence: 0.7 },
-  smoothness: { value: 0.8, influence: 0.7 },
-  monotonicity: { value: 0.7, influence: 0.7 },
-  gradient: { value: 0.2, influence: 0.7 },
-  mergeChain: { value: 0.5, influence: 0.7 },
+export const OPTIMIZED_GENOME_WEIGHTS: GenomeWeightsConfig = {
+  empties: { value: 0.530567642055551 },
+  merges: { value: 0.25911355123565794 },
+  edge: { value: 0.025802603941722697 },
+  corner: { value: 0.06961120281274318 },
+  maxTile: { value: 0.40671379055226253 },
+  maxTilePosition: { value: 0.41869085784691645 },
+  isolation: { value: 0.15495942340214536 },
+  smoothness: { value: 0.6648946944285923 },
+  monotonicity: { value: 0.16975427140119653 },
+  gradient: { value: 0.014250664241146484 },
+  mergeChain: { value: 0.3938771145213853 },
 };
 
 export const GENETIC_ALGORITHM_CONFIG: GeneticAlgorithmConfig = {
@@ -38,5 +38,5 @@ export const GENETIC_ALGORITHM_CONFIG: GeneticAlgorithmConfig = {
   mutationRate: 0.2,
   adaptiveMutation: true,
   minMutationRate: 0.05,
-  maxMutationRate: 0.1,
+  maxMutationRate: 0.3,
 };
