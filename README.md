@@ -1,32 +1,52 @@
-[![license](https://img.shields.io/github/license/cameronmathis/RepoTemplate)](LICENSE)
-[![CodeQL](https://github.com/cameronmathis/RepoTemplate/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/cameronmathis/RepoTemplate/actions/workflows/codeql-analysis.yml)
-[![CodeFactor](https://www.codefactor.io/repository/github/cameronmathis/RepoTemplate/badge)](https://www.codefactor.io/repository/github/cameronmathis/RepoTemplate)
+# 2048 Solver
 
-# Repo Template
+[![license](https://img.shields.io/github/license/cameronmathis/2048Solver)](LICENSE)
+[![CodeQL](https://github.com/cameronmathis/2048Solver/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/cameronmathis/2048Solver/actions/workflows/codeql-analysis.yml)
+[![CodeFactor](https://www.codefactor.io/repository/github/cameronmathis/2048Solver/badge)](https://www.codefactor.io/repository/github/cameronmathis/2048Solver)
 
 ## Table of contents
 
 - [General info](#general-info)
 - [Setup](#setup)
-- [Software details](#Software-details)
+- [Software details](#software-details)
 - [Status](#status)
 - [Contact](#contact)
 
 ## General info
 
-This is a template I created to easily spin up new GitHub Repositories.
+This project implements a genetic algorithm to solve the 2048 game. It evolves strategies to achieve high scores and reach the 2048 tile. The solver uses machine learning techniques to improve its performance over multiple generations of gameplay.
 
 ## Setup
 
-In order to use this...
+To run this project:
+
+1. Clone the repository
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+1. Start the solver:
+
+```bash
+npm start
+```
 
 ## Software details
 
-Language:
+- Language: TypeScript
+- Runtime: Node.js
+- Key Features:
+  - Genetic Algorithm implementation
+  - 2048 game simulation
+  - Heuristic-based bot
+  - Performance logging
 
 ## Status
 
-Version: </br>
+Version: 0.1.0  
 Project is: _in progress_
 
 ## Contact
