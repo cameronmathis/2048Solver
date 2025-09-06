@@ -5,7 +5,7 @@ import { Board } from "./game/Board.js";
 import { Logger } from "./utils/Logger.js";
 
 async function main() {
-  const logger = Logger.getInstance();
+  const logger: Logger = Logger.getInstance();
   const geneticAlgorithm: GeneticAlgorithm = new GeneticAlgorithm(
     GENETIC_ALGORITHM_CONFIG
   );
@@ -25,16 +25,20 @@ async function main() {
     mergeChain: { value: best.weightMergeChain },
   });
 
-  const numberOfGames = 1000;
+  const numberOfGames: number = 1000;
   logger.log(`Running ${numberOfGames} games with the best genome...`);
-  let gamesWon = 0;
-  let bestScore = 0;
+  let totalScore: number = 0;
+  let gamesWon: number = 0;
+  let bestScore: number = 0;
   let bestBoard: Board = new Board();
 
-  let gameIndex = 0;
+  let gameIndex: number = 0;
   while (gameIndex++ < numberOfGames) {
-    const board = await playOneGame(best);
-    if (board.maxTile >= 2048) gamesWon++;
+    const board: Board = await playOneGame(best);
+    totalScore += board.score;
+    if (board.maxTile >= 2048) {
+      gamesWon++;
+    }
     if (board.score > bestScore) {
       bestScore = board.score;
       bestBoard = board;
@@ -48,8 +52,9 @@ async function main() {
       100
     ).toFixed(1)}%)`
   );
-  logger.log(`Best score achieved: ${bestScore}`);
-  logger.log("Best scoring board:");
+  logger.log(`Average score: ${(totalScore / numberOfGames).toFixed(2)}`);
+  logger.log(`Best score: ${bestScore}`);
+  logger.log("Highest scoring board:");
   bestBoard.print();
 
   logger.close();

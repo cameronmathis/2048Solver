@@ -30,7 +30,7 @@ export const OPTIMIZED_GENOME_WEIGHTS: GenomeWeightsConfig = {
 };
 
 export const GENETIC_ALGORITHM_CONFIG: GeneticAlgorithmConfig = {
-  generations: 100,
+  generations: 1000,
   populationSize: 100,
   gamesPerGenome: 5,
   eliteCount: 5,

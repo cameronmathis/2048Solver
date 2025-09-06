@@ -14,7 +14,9 @@
 
 ## General info
 
-This project implements a genetic algorithm to solve the 2048 game. It evolves strategies to achieve high scores and reach the 2048 tile. The solver uses machine learning techniques to improve its performance over multiple generations of gameplay.
+This project applies a genetic algorithm to the 2048 game, evolving strategies that maximize score and improve tile placement over time. Instead of hard-coding heuristics, the solver uses an evolutionary process where genomes (sets of heuristic weights) are evaluated, selected, and mutated across generations. The goal is to consistently discover strategies that reach the 2048 tile and beyond.
+
+My personal benchmark is to evolve a genome capable of averaging scores above 47,012 (my current best run).
 
 ## Setup
 
