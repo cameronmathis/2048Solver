@@ -6,10 +6,20 @@
   "scripts": {
     "start": "npm run build && npm run run",
     "build": "tsc -p .",
-    "run": "node dist/index.js"
+    "run": "node dist/index.js",
+    "lint": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "devDependencies": {
+    "@eslint/js": "^9.35.0",
     "@types/node": "^24.3.1",
-    "typescript": "^5.9.2"
+    "@typescript-eslint/eslint-plugin": "^6.18.0",
+    "@typescript-eslint/parser": "^6.18.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.3.3"
   }
 }

@@ -1,10 +1,9 @@
 ---
 name: Feature improvement
 about: Suggest an improvement for this project
-title: ''
+title: ""
 labels: improvement
-assignees: ''
-
+assignees: ""
 ---
 
 **Is your feature request related to a problem? Please describe.**

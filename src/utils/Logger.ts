@@ -8,6 +8,7 @@ export class Logger {
 
   private constructor() {
     const logsDir: string = path.join(process.cwd(), "logs");
+
     if (!fs.existsSync(logsDir)) {
       fs.mkdirSync(logsDir);
     }
@@ -21,6 +22,7 @@ export class Logger {
     if (!Logger.instance) {
       Logger.instance = new Logger();
     }
+
     return Logger.instance;
   }
 

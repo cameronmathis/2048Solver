@@ -25,23 +25,29 @@ export class Board {
 
   private calculateMaxTile(): number {
     let maxValue: number = 0;
+
     for (let row: number = 0; row < 4; row++) {
       for (let column: number = 0; column < 4; column++) {
         maxValue = Math.max(maxValue, this._grid[row][column]);
       }
     }
+
     return maxValue;
   }
 
   private addRandomTile(): boolean {
     const emptyCells: { row: number; column: number }[] = this.emptyCells;
-    if (emptyCells.length === 0) return false;
+
+    if (emptyCells.length === 0) {
+      return false;
+    }
 
     const randomIndex: number = Math.floor(Math.random() * emptyCells.length);
     const { row, column } = emptyCells[randomIndex];
     const newValue: number = Math.random() < 0.9 ? 2 : 4;
     this.grid[row][column] = newValue;
     this._maxTile = Math.max(this._maxTile, newValue);
+
     return true;
   }
 
@@ -63,6 +69,7 @@ export class Board {
 
   public get emptyCells(): { row: number; column: number }[] {
     const emptyCells: { row: number; column: number }[] = [];
+
     for (let row: number = 0; row < 4; row++) {
       for (let column: number = 0; column < 4; column++) {
         if (this.grid[row][column] === 0) {
@@ -70,6 +77,7 @@ export class Board {
         }
       }
     }
+
     return emptyCells;
   }
 
@@ -78,8 +86,14 @@ export class Board {
 
     for (let row: number = 0; row < 4 && validMoves.size < 2; row++) {
       const { positive, negative } = this.canMove(this.grid[row]);
-      if (positive) validMoves.add("left");
-      if (negative) validMoves.add("right");
+
+      if (positive) {
+        validMoves.add("left");
+      }
+
+      if (negative) {
+        validMoves.add("right");
+      }
     }
 
     for (let column: number = 0; column < 4 && validMoves.size < 4; column++) {
@@ -90,8 +104,14 @@ export class Board {
         this.grid[3][column],
       ];
       const { positive, negative } = this.canMove(columnValues);
-      if (positive) validMoves.add("up");
-      if (negative) validMoves.add("down");
+
+      if (positive) {
+        validMoves.add("up");
+      }
+
+      if (negative) {
+        validMoves.add("down");
+      }
     }
 
     return Array.from(validMoves);
@@ -104,6 +124,7 @@ export class Board {
 
     for (let i: number = 1; i < values.length; i++) {
       const currentValue: number = values[i];
+
       if (currentValue === 0 && lastValue !== 0) {
         canMoveNegative = true;
       } else if (currentValue !== 0) {
@@ -112,6 +133,7 @@ export class Board {
           canMoveNegative = lastValue === currentValue ? true : canMoveNegative;
         }
       }
+
       lastValue = currentValue;
     }
 
@@ -124,6 +146,7 @@ export class Board {
 
     for (let row: number = 0; row < 4; row++) {
       let rowString: string = "|";
+
       for (let column: number = 0; column < 4; column++) {
         const cellValue: string =
           this.grid[row][column] === 0
@@ -131,9 +154,11 @@ export class Board {
             : this.grid[row][column].toString();
         rowString += cellValue.padStart(4, " ") + "|";
       }
+
       this.logger.log(rowString);
       this.logger.log(borderLine);
     }
+
     this.logger.log(`Score: ${this.score}`);
   }
 
@@ -149,21 +174,25 @@ export class Board {
         for (let column: number = 0; column < 4; column++) {
           this.processColumn(column, +1);
         }
+
         break;
       case "down":
         for (let column: number = 0; column < 4; column++) {
           this.processColumn(column, -1);
         }
+
         break;
       case "left":
         for (let row: number = 0; row < 4; row++) {
           this.processRow(row, +1);
         }
+
         break;
       case "right":
         for (let row: number = 0; row < 4; row++) {
           this.processRow(row, -1);
         }
+
         break;
     }
 
@@ -184,10 +213,12 @@ export class Board {
       for (let column: number = 0; column < 4; column++) {
         Board._serializeBuffer[bufferIndex++] =
           this._grid[row][column].toString();
+
         if (column < 3) {
           Board._serializeBuffer[bufferIndex++] = ",";
         }
       }
+
       if (row < 3) {
         Board._serializeBuffer[bufferIndex++] = "|";
       }

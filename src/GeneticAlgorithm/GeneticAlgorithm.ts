@@ -5,7 +5,7 @@ import {
   generateGenome,
   Genome,
   mutate,
-} from "./Genome.js";
+} from "./Genome/index.js";
 
 export type GeneticAlgorithmConfig = {
   generations: number;
@@ -14,39 +14,29 @@ export type GeneticAlgorithmConfig = {
   eliteCount: number;
   tournamentSize: number;
   mutationRate: number;
-  randomSeed?: number;
   adaptiveMutation?: boolean;
   minMutationRate?: number;
   maxMutationRate?: number;
+  randomImmigrants?: number;
 };
 
 export class GeneticAlgorithm {
   private readonly config: GeneticAlgorithmConfig;
   private logger: Logger;
-  private randomNumberGenerator: (() => number) | null = null;
 
   constructor(config: GeneticAlgorithmConfig) {
     this.config = config;
     this.logger = Logger.getInstance();
-    if (config.randomSeed !== undefined) {
-      const randomSeeded: () => number = this.getRandomSeeded(
-        config.randomSeed
-      );
-      this.randomNumberGenerator = Math.random;
-      (Math as any).random = randomSeeded;
-    }
-  }
-
-  private getRandomSeeded(seed: number) {
-    let state: number = seed >>> 0;
-    return () => {
-      state = (1664525 * state + 1013904223) >>> 0;
-      return state / 2 ** 32;
-    };
   }
 
   async run(): Promise<Genome> {
-    let population: Genome[] = this.initializePopulation();
+    const population: Genome[] = this.initializePopulation();
+    const bestGenome = await this.evolvePopulation(population);
+
+    return bestGenome;
+  }
+
+  private async evolvePopulation(population: Genome[]): Promise<Genome> {
     let bestGenome: Genome = population[0];
     let bestFitness: number = -Infinity;
 
@@ -57,21 +47,19 @@ export class GeneticAlgorithm {
     ) {
       const {
         fitnesses,
-        bestGenome: genBest,
-        bestFitness: genBestFitness,
+        bestGenome: generationalBestGenome,
+        bestFitness: generationalBestFitness,
       } = await this.evaluatePopulation(population);
 
-      if (genBestFitness > bestFitness) {
-        bestGenome = genBest;
-        bestFitness = genBestFitness;
+      if (generationalBestFitness > bestFitness) {
+        bestGenome = generationalBestGenome;
+        bestFitness = generationalBestFitness;
       }
 
       this.logGenerationStats(generation, fitnesses, bestFitness);
-      population = this.createNextGeneration(population, fitnesses, generation);
-    }
+      this.logBestGenome(generation, bestGenome);
 
-    if (this.randomNumberGenerator) {
-      (Math as any).random = this.randomNumberGenerator;
+      population = this.createNextGeneration(population, fitnesses, generation);
     }
 
     return bestGenome;
@@ -96,6 +84,7 @@ export class GeneticAlgorithm {
         this.config.gamesPerGenome
       );
       fitnesses.push(fitness);
+
       if (fitness > bestFitness) {
         bestGenome = population[i];
         bestFitness = fitness;
@@ -125,6 +114,22 @@ export class GeneticAlgorithm {
     );
   }
 
+  private logBestGenome(generation: number, genome: Genome): void {
+    this.logger.log(
+      `Generation ${generation + 1}/${this.config.generations} - Best Genome:`,
+      {
+        empties: { value: genome.weightEmpties },
+        merges: { value: genome.weightMerges },
+        isolation: { value: genome.weightIsolation },
+        smoothness: { value: genome.weightSmoothness },
+        monotonicity: { value: genome.weightMonotonicity },
+        mergeChain: { value: genome.weightMergeChain },
+        progression: { value: genome.weightProgression },
+        positional: { value: JSON.stringify(genome.weightPositional) },
+      }
+    );
+  }
+
   private createNextGeneration(
     population: Genome[],
     fitnesses: number[],
@@ -136,6 +141,15 @@ export class GeneticAlgorithm {
     );
 
     const nextGeneration: Genome[] = this.selectElites(sortedPopulation);
+
+    const randomImmigrants = this.config.randomImmigrants ?? 0;
+
+    for (let i = 0; i < randomImmigrants; i++) {
+      if (nextGeneration.length < this.config.populationSize) {
+        nextGeneration.push(generateGenome());
+      }
+    }
+
     const mutationRate: number = this.calculateGenerationalMutationRate(
       generation,
       sortedPopulation
@@ -172,6 +186,7 @@ export class GeneticAlgorithm {
     const indices: number[] = population
       .map((_, i) => i)
       .sort((x, y) => fitnesses[y] - fitnesses[x]);
+
     return indices.map((i) => population[i]);
   }
 
@@ -181,19 +196,39 @@ export class GeneticAlgorithm {
 
   private calculatePopulationDiversity(population: Genome[]): number {
     let diversity: number = 0;
+
     for (let i = 0; i < population.length; i++) {
       for (let ii = i + 1; ii < population.length; ii++) {
         diversity += this.genomeDistance(population[i], population[ii]);
       }
     }
+
     return diversity / ((population.length * (population.length - 1)) / 2);
   }
 
   private genomeDistance(genomeA: Genome, genomeB: Genome): number {
     return Object.keys(genomeA).reduce((sum, key) => {
+      if (key === "weightPositional") {
+        const positionalA: number[][] = genomeA.weightPositional;
+        const positionalB: number[][] = genomeB.weightPositional;
+        let positionalSum: number = 0;
+
+        for (let i: number = 0; i < positionalA.length; i++) {
+          for (let j: number = 0; j < positionalA[i].length; j++) {
+            positionalSum += Math.pow(positionalA[i][j] - positionalB[i][j], 2);
+          }
+        }
+
+        return sum + positionalSum;
+      }
+
       return (
         sum +
-        Math.pow(genomeA[key as keyof Genome] - genomeB[key as keyof Genome], 2)
+        Math.pow(
+          (genomeA[key as keyof Genome] as number) -
+            (genomeB[key as keyof Genome] as number),
+          2
+        )
       );
     }, 0);
   }
@@ -218,6 +253,7 @@ export class GeneticAlgorithm {
     );
 
     let adaptiveRate: number;
+
     if (diversity < 0.1) {
       adaptiveRate = this.config.mutationRate * (1.5 + diversityFactor);
     } else {
@@ -227,6 +263,7 @@ export class GeneticAlgorithm {
 
     const minRate: number = this.config.minMutationRate ?? 0.05;
     const maxRate: number = this.config.maxMutationRate ?? 0.3;
+
     return Math.max(minRate, Math.min(maxRate, adaptiveRate));
   }
 
@@ -248,6 +285,7 @@ export class GeneticAlgorithm {
 
     let child: Genome = crossover(parent1, parent2);
     child = mutate(child, mutationRate);
+
     return child;
   }
 
@@ -262,6 +300,7 @@ export class GeneticAlgorithm {
       const index: number = Math.floor(Math.random() * population.length);
       const genome: Genome = population[index];
       const fitness = fitnesses[index];
+
       if (!best || fitness > best.fitness) {
         best = { genome, fitness };
       }
